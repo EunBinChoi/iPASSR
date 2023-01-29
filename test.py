@@ -10,14 +10,14 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--testset_dir', type=str, default='./data/test/')
     parser.add_argument('--scale_factor', type=int, default=2)
-    parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--model_name', type=str, default='iPASSR_2xSR')
     return parser.parse_args()
 
 
 def test(cfg):
     net = Net(cfg.scale_factor).to(cfg.device)
-    model = torch.load('./log/' + cfg.model_name + '.pth.tar')
+    model = torch.load('./log/' + cfg.model_name + '.pth.tar', map_location=torch.device('cpu'))
     net.load_state_dict(model['state_dict'])
     file_list = os.listdir(cfg.testset_dir + cfg.dataset + '/lr_x' + str(cfg.scale_factor))
     for idx in range(len(file_list)):
@@ -42,7 +42,7 @@ def test(cfg):
 
 if __name__ == '__main__':
     cfg = parse_args()
-    dataset_list = ['Flickr1024', 'KITTI2012', 'KITTI2015', 'Middlebury']
+    dataset_list = ['Flickr1024'] # ['Flickr1024', 'KITTI2012', 'KITTI2015', 'Middlebury']
     for i in range(len(dataset_list)):
         cfg.dataset = dataset_list[i]
         test(cfg)

@@ -9,14 +9,14 @@ from model import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scale_factor", type=int, default=2)
-    parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--batch_size', type=int, default=36)
     parser.add_argument('--lr', type=float, default=2e-4, help='initial learning rate')
     parser.add_argument('--gamma', type=float, default=0.5, help='')
     parser.add_argument('--start_epoch', type=int, default=0, help='start epoch')
     parser.add_argument('--n_epochs', type=int, default=80, help='number of epochs to train')
     parser.add_argument('--n_steps', type=int, default=30, help='number of epochs to update learning rate')
-    parser.add_argument('--trainset_dir', type=str, default='./data/train/')
+    parser.add_argument('--trainset_dir', type=str, default='./data/train')
     parser.add_argument('--model_name', type=str, default='iPASSR')
     parser.add_argument('--load_pretrain', type=bool, default=False)
     parser.add_argument('--model_path', type=str, default='log/iPASSR.pth.tar')
@@ -30,7 +30,7 @@ def train(train_loader, cfg):
 
     if cfg.load_pretrain:
         if os.path.isfile(cfg.model_path):
-            model = torch.load(cfg.model_path, map_location={'cuda:0': cfg.device})
+            model = torch.load(cfg.model_path, map_location={'cpu': cfg.device})
             net.load_state_dict(model['state_dict'])
             cfg.start_epoch = model["epoch"]
         else:
@@ -118,10 +118,12 @@ def train(train_loader, cfg):
 
 def main(cfg):
     train_set = TrainSetLoader(cfg)
-    train_loader = DataLoader(dataset=train_set, num_workers=6, batch_size=cfg.batch_size, shuffle=True)
+    train_loader = DataLoader(dataset=train_set, num_workers=0, batch_size=cfg.batch_size, shuffle=True)
+    print('trainset loading success!\n', train_loader)
+
     train(train_loader, cfg)
+
 
 if __name__ == '__main__':
     cfg = parse_args()
     main(cfg)
-
