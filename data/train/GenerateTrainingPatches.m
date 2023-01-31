@@ -14,6 +14,14 @@ for idx_dataset = 1 : length(Datasets)
     for idx_file = 1 : 2 : length(img_list)
         img_0 = imread(['./', dataset, '/', img_list(idx_file).name]);
         img_1 = imread(['./', dataset, '/', img_list(idx_file + 1).name]);
+
+        img_0_h = size(img_0, 1);
+        img_0_w = size(img_0, 2);
+        fprintf("%d %d\n", img_0_h, img_0_w);
+
+        img_1_h = size(img_1, 1);
+        img_1_w = size(img_1, 2);
+        fprintf("%d %d\n", img_1_h, img_1_w);
         
         %% generate HR & LR images
         
@@ -23,8 +31,26 @@ for idx_dataset = 1 : length(Datasets)
         end
         img_hr_0 = modcrop(img_0, scale);
         img_hr_1 = modcrop(img_1, scale);
+        
+        img_hr_0_h = size(img_hr_0, 1);
+        img_hr_0_w = size(img_hr_0, 2);
+        fprintf("%d %d\n", img_hr_0_h, img_hr_0_w);
+
+        img_hr_1_h = size(img_hr_1, 1);
+        img_hr_1_w = size(img_hr_1, 2);
+        fprintf("%d %d\n", img_hr_1_h, img_hr_1_w);
+        
+
         img_lr_0 = imresize(img_hr_0, 1/scale, 'bicubic');
         img_lr_1 = imresize(img_hr_1, 1/scale, 'bicubic');
+
+        img_lr_0_h = size(img_lr_0, 1);
+        img_lr_0_w = size(img_lr_0, 2);
+        fprintf("%d %d\n", img_lr_0_h, img_lr_0_w);
+
+        img_lr_1_h = size(img_lr_1, 1);
+        img_lr_1_w = size(img_lr_1, 2);
+        fprintf("%d %d\n", img_lr_1_h, img_lr_1_w);
 
 
         %% extract patches of size 30*90 with stride 20
