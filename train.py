@@ -1,7 +1,10 @@
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 import torch.backends.cudnn as cudnn
+import torchvision
 import argparse
+from datetime import datetime
 from utils import *
 from model import *
 
@@ -44,15 +47,40 @@ def train(train_loader, cfg):
     loss_epoch = []
     loss_list = []
 
+    writer = SummaryWriter('./tb/' + datetime.now().strftime("%Y%m%d_%H_%M"))
+
     for idx_epoch in range(cfg.start_epoch, cfg.n_epochs):
 
         for idx_iter, (HR_left, HR_right, LR_left, LR_right) in enumerate(train_loader):
             b, c, h, w = LR_left.shape
+
+
+            # -------------------------------------------------------------------------------
+            # tensorboard
+            hr_left_grid = torchvision.utils.make_grid(HR_left)
+            hr_right_grid = torchvision.utils.make_grid(HR_right)
+            writer.add_image('hr_left', hr_left_grid, global_step=idx_iter)
+            writer.add_image('hr_right', hr_right_grid, global_step=idx_iter)
+
+            lr_left_grid = torchvision.utils.make_grid(LR_left)
+            lr_right_grid = torchvision.utils.make_grid(LR_right)
+            writer.add_image('lr_left', lr_left_grid, global_step=idx_iter)
+            writer.add_image('lr_right', lr_right_grid, global_step=idx_iter)
+            # -------------------------------------------------------------------------------
+
             HR_left, HR_right, LR_left, LR_right  = Variable(HR_left).to(cfg.device), Variable(HR_right).to(cfg.device),\
                                                     Variable(LR_left).to(cfg.device), Variable(LR_right).to(cfg.device)
 
             SR_left, SR_right, (M_right_to_left, M_left_to_right), (V_left, V_right)\
                 = net(LR_left, LR_right, is_training=1)
+
+            # -------------------------------------------------------------------------------
+            # tensorboard
+            sr_left_grid = torchvision.utils.make_grid(SR_left)
+            sr_right_grid = torchvision.utils.make_grid(SR_right)
+            writer.add_image('sr_left', sr_left_grid, global_step=idx_iter)
+            writer.add_image('sr_right', sr_right_grid, global_step=idx_iter)
+            # -------------------------------------------------------------------------------
 
             ''' SR Loss '''
             loss_SR = criterion_L1(SR_left, HR_left) + criterion_L1(SR_right, HR_right)

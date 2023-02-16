@@ -15,7 +15,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def test(cfg):
+def A(cfg):
     net = Net(cfg.scale_factor).to(cfg.device)
     model = torch.load('./log/' + cfg.model_name + '.pth.tar', map_location=torch.device('cpu'))
     net.load_state_dict(model['state_dict'])
@@ -45,5 +45,5 @@ if __name__ == '__main__':
     dataset_list = ['Flickr1024'] # ['Flickr1024', 'KITTI2012', 'KITTI2015', 'Middlebury']
     for i in range(len(dataset_list)):
         cfg.dataset = dataset_list[i]
-        test(cfg)
+        A(cfg)
     print('Finished!')
