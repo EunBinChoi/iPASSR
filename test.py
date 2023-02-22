@@ -11,15 +11,17 @@ def parse_args():
     parser.add_argument('--testset_dir', type=str, default='./data/test/')
     parser.add_argument('--scale_factor', type=int, default=2)
     parser.add_argument('--device', type=str, default='cpu')
-    parser.add_argument('--model_name', type=str, default='iPASSR_2xSR')
+    parser.add_argument('--model_name', type=str, default='iPASSR_4xSR')
     return parser.parse_args()
 
 
-def A(cfg):
+def model(cfg):
     net = Net(cfg.scale_factor).to(cfg.device)
     model = torch.load('./log/' + cfg.model_name + '.pth.tar', map_location=torch.device('cpu'))
     net.load_state_dict(model['state_dict'])
     file_list = os.listdir(cfg.testset_dir + cfg.dataset + '/lr_x' + str(cfg.scale_factor))
+    file_list = file_list[1:]
+
     for idx in range(len(file_list)):
         LR_left = Image.open(cfg.testset_dir + cfg.dataset + '/lr_x' + str(cfg.scale_factor) + '/' + file_list[idx] + '/lr0.png')
         LR_right = Image.open(cfg.testset_dir + cfg.dataset + '/lr_x' + str(cfg.scale_factor) + '/' + file_list[idx] + '/lr1.png')
@@ -42,8 +44,8 @@ def A(cfg):
 
 if __name__ == '__main__':
     cfg = parse_args()
-    dataset_list = ['Flickr1024'] # ['Flickr1024', 'KITTI2012', 'KITTI2015', 'Middlebury']
+    dataset_list = ['mine'] # ['Flickr1024', 'KITTI2012', 'KITTI2015', 'Middlebury']
     for i in range(len(dataset_list)):
         cfg.dataset = dataset_list[i]
-        A(cfg)
+        model(cfg)
     print('Finished!')
