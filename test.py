@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--testset_dir', type=str, default='./data/test/')
     parser.add_argument('--scale_factor', type=int, default=2)
     parser.add_argument('--device', type=str, default='cpu')
-    parser.add_argument('--model_name', type=str, default='iPASSR_4xSR')
+    parser.add_argument('--model_name', type=str, default='iPASSR_2xSR')
     return parser.parse_args()
 
 
